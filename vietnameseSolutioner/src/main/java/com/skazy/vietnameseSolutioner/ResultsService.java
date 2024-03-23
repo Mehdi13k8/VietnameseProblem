@@ -42,6 +42,8 @@ public class ResultsService {
     private ResultsRepository repository;
 
     public void performCalculationAndSave() {
+        // delete all the results in the database
+        repository.deleteAll();
         String[] arrayToString = { "X", "+", "13", "*", "X", "/", "X", "+",
                 "X", "+", "12", "*", "X", "-", "X", "-", "11", "+", "X", "*", "X",
                 "/", "X", "-", "10", "=", "66" };
@@ -68,7 +70,6 @@ public class ResultsService {
 
         // for (int j = 0; j < possibilities; j++) {
         while (results.size() < possibilities) {
-            int j = 0;
             // timer to find the best result
             long startTime = System.nanoTime();
             int[] numberStockCpy = Arrays.copyOf(numberStock, numberStock.length);
@@ -171,20 +172,26 @@ public class ResultsService {
             } else {
                 results.add(new resultMathProblem(new int[] { definitiveResult }, arrayToStringCpy, duration));
             }
-            // save all the results in a file
-            try {
-                // write the results in a file
-                FileWriter myWriter = new FileWriter("results.txt");
-                for (int i = 0; i < results.size(); i++) {
-                    myWriter.write("Result: " + results.get(i).getResult()[0] + " Calculation: "
-                            + Arrays.toString(results.get(i).getCalculation()) + " Duration: " + results.get(i).duration
-                            + "\n");
-                }
-                myWriter.close();
-            } catch (Exception e) {
-                System.out.println("An error occurred.");
-                e.printStackTrace();
+        }
+        // save all the results in a file
+        try {
+            // write the results in a file
+            FileWriter myWriter = new FileWriter("results.txt");
+            for (int i = 0; i < results.size(); i++) {
+                myWriter.write("Result: " + results.get(i).getResult()[0] + " Calculation: "
+                        + Arrays.toString(results.get(i).getCalculation()) + " Duration: " + results.get(i).duration
+                        + "\n");
             }
+            myWriter.close();
+            // save the results in the database
+            for (int i = 0; i < results.size(); i++) {
+                repository.save(
+                        new Results(Arrays.toString(results.get(i).getCalculation()), results.get(i).getResult()[0],
+                                (int) results.get(i).duration));
+            }
+        } catch (Exception e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
         }
     }
 }

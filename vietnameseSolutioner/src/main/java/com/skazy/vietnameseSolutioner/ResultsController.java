@@ -3,6 +3,7 @@ package com.skazy.vietnameseSolutioner;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,12 +34,13 @@ class ResultsController {
 
   // Aggregate root
   // tag::get-aggregate-root[]
+	@CrossOrigin(origins = "*")
   @GetMapping("/results")
   List<Results> all() {
     return repository.findAll();
   }
   // end::get-aggregate-root[]
-  
+
   // Single item
   @GetMapping("/results/{id}")
   Results one(@PathVariable Long id) {
@@ -53,11 +55,12 @@ class ResultsController {
     repository.deleteById(id);
   }
 
+  @CrossOrigin(origins = "*")
   @PostMapping("/results")
-  public String newResult(@RequestBody String enteredNumbers) {
-      resultsService.performCalculationAndSave(enteredNumbers);
-      System.out.println("New result saved");
-      return "New result saved";
+  public String newResult() {
+    resultsService.performCalculationAndSave();
+    System.out.println("New result saved X1");
+    return "New result saved";
   }
   // request to
 }
