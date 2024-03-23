@@ -1,9 +1,14 @@
+package com.skazy.vietnameseSolutioner;
+
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Random;
-import java.io.FileWriter;
 
-public class vietMathProblem {
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class ResultsService {
     static public class resultMathProblem {
         int[] result;
         String[] calculation;
@@ -33,22 +38,14 @@ public class vietMathProblem {
 
     }
 
-    public static void main(String[] args) {
-        if (args.length != 1) {
-            System.out.println("Usage: java vietMathProblem <string>");
-            return;
-        }
-        String str = args[0];
-        int len = str.length();
-        if (len < 1) {
-            System.out.println("String is empty");
-            return;
-        } else {
-            numberStringFunction(str);
-        }
-    }
+    @Autowired
+    private ResultsRepository repository;
 
-    public static void findGoodCombinations(String enteredNumbers, String[] arrayToString) {
+    public void performCalculationAndSave() {
+        String[] arrayToString = { "X", "+", "13", "*", "X", "/", "X", "+",
+                "X", "+", "12", "*", "X", "-", "X", "-", "11", "+", "X", "*", "X",
+                "/", "X", "-", "10", "=", "66" };
+
         ArrayList<String> pile = new ArrayList<String>();
         int definitiveResult = 0;
         // copy the arrayToString to avoid modifying the original array
@@ -189,29 +186,5 @@ public class vietMathProblem {
                 e.printStackTrace();
             }
         }
-
-        return;
-    }
-
-    public static String vietnameseAlgorithm(String enteredNumbers, String[] originalCalculus) {
-        // Number stock to use in the algorithm
-        // StringBuilder arrayToString = new StringBuilder();
-
-        // for (String s : originalCalculus) {
-        // arrayToString.append(s);
-        // }
-
-        findGoodCombinations(enteredNumbers, originalCalculus);
-
-        // Return enteredNumbers as per the original C code
-        return enteredNumbers;
-    }
-
-    public static String numberStringFunction(String enteredNumbers) {
-        String[] numberString = { "X", "+", "13", "*", "X", "/", "X", "+",
-                "X", "+", "12", "*", "X", "-", "X", "-", "11", "+", "X", "*", "X",
-                "/", "X", "-", "10", "=", "66" };
-
-        return vietnameseAlgorithm(enteredNumbers, numberString);
     }
 }
