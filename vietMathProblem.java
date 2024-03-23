@@ -1,8 +1,38 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
+import java.io.FileWriter;
 
 public class vietMathProblem {
+    static public class resultMathProblem {
+        int[] result;
+        String[] calculation;
+        long duration;
+
+        public resultMathProblem(int[] result, String[] calculation, long duration) {
+            this.result = result;
+            this.calculation = calculation;
+            this.duration = duration;
+        }
+
+        public int[] getResult() {
+            return result;
+        }
+
+        public void setResult(int[] result) {
+            this.result = result;
+        }
+
+        public String[] getCalculation() {
+            return calculation;
+        }
+
+        public void setCalculation(String[] calculation) {
+            this.calculation = calculation;
+        }
+
+    }
+
     public static void main(String[] args) {
         if (args.length != 1) {
             System.out.println("Usage: java vietMathProblem <string>");
@@ -24,18 +54,37 @@ public class vietMathProblem {
         int definitiveResult = 0;
         // copy the arrayToString to avoid modifying the original array
 
-        while (definitiveResult != 66) {
+        // number of possibilities for the X and numberStock from arrayToString
+        int[] numberStock = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+        // number of X in the arrayToString
+        int numberOfX = 0;
+        for (int i = 0; i < arrayToString.length; i++) {
+            if (arrayToString[i].equals("X")) {
+                numberOfX++;
+            }
+        }
+        int possibilities = numberStock.length * numberOfX;
+
+        // store the result of the calculation in an array, with timer to find the best
+        // result of the calculation and store also the calculation string (int[],
+        // String[], long[])
+        ArrayList<resultMathProblem> results = new ArrayList<resultMathProblem>();
+
+        // for (int j = 0; j < possibilities; j++) {
+        while (results.size() < possibilities) {
+            int j = 0;
+            // timer to find the best result
+            long startTime = System.nanoTime();
+            int[] numberStockCpy = Arrays.copyOf(numberStock, numberStock.length);
             String[] arrayToStringCpy = Arrays.copyOf(arrayToString, arrayToString.length);
-            int[] numberStock = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-            // System.out.println("The result is: " + Arrays.toString(arrayToString));
             for (int i = 0; i < arrayToStringCpy.length; i++) {
                 if (arrayToStringCpy[i].equals("X")) {
-                    int randomIndex = (int) (Math.random() * numberStock.length);
-                    arrayToStringCpy[i] = Integer.toString(numberStock[randomIndex]);
+                    int randomIndex = (int) (Math.random() * numberStockCpy.length);
+                    arrayToStringCpy[i] = Integer.toString(numberStockCpy[randomIndex]);
                     // swap the last element with the random index
-                    numberStock[randomIndex] = numberStock[numberStock.length - 1];
+                    numberStockCpy[randomIndex] = numberStockCpy[numberStockCpy.length - 1];
                     // delete the last element
-                    numberStock = Arrays.copyOf(numberStock, numberStock.length - 1);
+                    numberStockCpy = Arrays.copyOf(numberStockCpy, numberStockCpy.length - 1);
                 }
             }
             // remove the 2 last elements
@@ -43,7 +92,7 @@ public class vietMathProblem {
 
             // (exemple [1, +, 13, *, 0, /, 6, +, 3, +, 12, *, 9, -, 2, -, 11, +, 4, *, 8,
             // /, 5, -, 10])
-            
+
             // create a pile from for rpn algorithm
             // fill the pile for the rpn algorithm
             for (int i = 0; i < arrayToStringCpy.length; i++) {
@@ -109,13 +158,38 @@ public class vietMathProblem {
             definitiveResult = Integer.parseInt(pile.get(0));
             // reset the pile
             pile.clear();
+            // timer to find the best result
+            long endTime = System.nanoTime();
+            long duration = (endTime - startTime);
+            // check if result is already in the found results array of objects so increment
+            // j
+            boolean found = false;
+            for (int i = 0; i < results.size(); i++) {
+                if (Arrays.toString(results.get(i).getCalculation()) == Arrays.toString(arrayToStringCpy)) {
+                    found = true;
+                    break;
+                }
+            }
+            if (found) {
+                continue;
+            } else {
+                results.add(new resultMathProblem(new int[] { definitiveResult }, arrayToStringCpy, duration));
+            }
+            // save all the results in a file
+            try {
+                // write the results in a file
+                FileWriter myWriter = new FileWriter("results.txt");
+                for (int i = 0; i < results.size(); i++) {
+                    myWriter.write("Result: " + results.get(i).getResult()[0] + " Calculation: "
+                            + Arrays.toString(results.get(i).getCalculation()) + " Duration: " + results.get(i).duration
+                            + "\n");
+                }
+                myWriter.close();
+            } catch (Exception e) {
+                System.out.println("An error occurred.");
+                e.printStackTrace();
+            }
         }
-        System.out.println("The result is: " + definitiveResult);
-
-        // print pile
-        // System.out.println("The pile is: " + Arrays.toString(pile));
-
-        // print the result
 
         return;
     }
