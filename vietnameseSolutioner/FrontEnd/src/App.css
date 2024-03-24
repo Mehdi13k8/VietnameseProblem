@@ -2,3 +2,17 @@
   text-align: center;
   text-align: -webkit-center;
 }
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 90%;
+}
+
+input {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  box-sizing: border-box;
+}

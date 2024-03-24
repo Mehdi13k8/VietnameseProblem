@@ -34,7 +34,7 @@ class ResultsController {
 
   // Aggregate root
   // tag::get-aggregate-root[]
-	@CrossOrigin(origins = "*")
+  @CrossOrigin(origins = "*")
   @GetMapping("/results")
   List<Results> all() {
     return repository.findAll();
@@ -42,11 +42,12 @@ class ResultsController {
   // end::get-aggregate-root[]
 
   // Single item
+  @CrossOrigin(origins = "*")
   @GetMapping("/results/{id}")
   Results one(@PathVariable Long id) {
 
     return repository.findById(id)
-        .orElseThrow(() -> new Error("Results not found"));
+        .orElseThrow(() -> new Error("Result not found"));
     // new ResultsNotFoundException(id));
   }
 

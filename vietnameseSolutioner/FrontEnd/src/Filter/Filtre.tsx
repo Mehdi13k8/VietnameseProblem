@@ -23,7 +23,10 @@ const Filter: React.FC<FilterProps> = ({ data, onFilter }) => {
             return;
         }
         const filteredData = data.filter(item => {
-            return item.result == filterValue;
+            // if result include filterValue (int to string)
+            if (item.result.toString().includes(filterValue)) {
+                return true;
+            }
         });
 
         // Appeler la fonction de rappel avec les données filtrées
@@ -32,8 +35,11 @@ const Filter: React.FC<FilterProps> = ({ data, onFilter }) => {
 
     return (
         <form onSubmit={handleFilterSubmit} id="filter">
-            <input type="text" value={filterValue} onChange={handleFilterChange} placeholder="Filtrer..." />
-            <button type="submit">Filtrer</button>
+            <input type="text" value={filterValue} onChange={handleFilterChange} placeholder="Filtrer..."
+                style={{ width: '90%', padding: '12px 20px', margin: '8px 0', display: 'inline-block', border: '1px solid #ccc', borderRadius: '4px', boxSizing: 'border-box' }}
+            />
+            <button style={{ width: '10%', backgroundColor: 'lightblue', color: 'white', padding: '14px 20px', margin: '8px 0', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+             type="submit">Filtrer</button>
         </form>
     );
 };
