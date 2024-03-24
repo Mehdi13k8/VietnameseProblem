@@ -51,9 +51,16 @@ class ResultsController {
     // new ResultsNotFoundException(id));
   }
 
-  @DeleteMapping("/Results/{id}")
+  @DeleteMapping("/result/{id}")
+  @CrossOrigin(origins = "*")
   void deleteResult(@PathVariable Long id) {
     repository.deleteById(id);
+  }
+
+  @DeleteMapping("/results")
+  @CrossOrigin(origins = "*")
+  void deleteAllResults() {
+    repository.deleteAll();
   }
 
   @CrossOrigin(origins = "*")
@@ -63,5 +70,22 @@ class ResultsController {
     System.out.println("New result saved X1");
     return "New result saved";
   }
-  // request to
+
+  // put mapping
+  @CrossOrigin(origins = "*")
+  @PutMapping("/result/{id}")
+  Results one(@RequestBody Results newResult, @PathVariable Long id) {
+
+    System.out.println(newResult);
+    return repository.findById(id)
+        .map(result -> {
+          result.setResult(newResult.getResult());
+          return repository.save(result);
+        })
+        .orElseGet(() -> {
+          // error handling
+          return repository.findById(id)
+              .orElseThrow(() -> new Error("Result not found"));
+        });
+  }
 }
