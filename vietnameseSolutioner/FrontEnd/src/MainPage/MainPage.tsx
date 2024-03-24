@@ -45,7 +45,6 @@ const MainPage = () => {
 
     // delete result by id
     const deleteResult = (id: any) => {
-        console.log("id ==>", id);
         axios.delete(`http://localhost:8080/result/${id}`)
             .then((response: any) => {
                 console.log("response ==>", response);
@@ -71,7 +70,14 @@ const MainPage = () => {
     }
 
     const lineCheck = (id: any) => {
-        console.log("id ==>", id);
+        axios.get(`http://localhost:8080/result/${id}/check`)
+            .then((response: any) => {
+                refreshResults();
+            })
+            .catch((error: any) => {
+                alert("Error: Checking result failed");
+                console.error('Error:', "data ==>", error);
+            });
     }
 
     return (
@@ -106,8 +112,14 @@ const MainPage = () => {
                 </thead>
                 <tbody>
                     {results.map((result: any) => (
-                        <tr key={result.id}>
-                            <td>
+                        <tr key={result.id}
+                            style={{
+                                backgroundColor: result.isCorrect === true ? 'lightgreen' : result.isCorrect === false ? 'lightcoral' : 'white'
+                            }}
+                        >
+                            <td
+                                style={{ width: '9vw', textAlignLast: 'center' }}
+                            >
                                 <a href={`http://localhost:3002/result/${result.id}`}>
                                     {result.id}
                                 </a>
@@ -141,7 +153,7 @@ const MainPage = () => {
                                 />
                             </td>
                             <td style={{ textAlignLast: 'center' }}
-                            ><input style={{ width: '100%' }} type="text" value={result.calculation} /> </td>
+                            ><input disabled style={{ width: '100%' }} type="text" value={result.calculation} /> </td>
                             <td
                                 style={{ width: '0' }}
                             > <button id={result.id}

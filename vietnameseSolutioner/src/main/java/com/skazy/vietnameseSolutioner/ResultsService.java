@@ -187,11 +187,100 @@ public class ResultsService {
             for (int i = 0; i < results.size(); i++) {
                 repository.save(
                         new Results(Arrays.toString(results.get(i).getCalculation()), results.get(i).getResult()[0],
-                                (int) results.get(i).duration));
+                                (int) results.get(i).duration, true));
             }
         } catch (Exception e) {
             System.out.println("An error occurred.");
             e.printStackTrace();
+        }
+    }
+
+    // check if the result is good of calculation
+    public String checkResult(Long id) {
+        Results result = repository.findById(id).orElseThrow(() -> new Error("Result not found"));
+        // remove [, ] and spaces from the string and split the string
+        String[] arrayToString = result.getCalculation().replaceAll("\\[", "").replaceAll("\\]", "").replaceAll(" ", "")
+                .split(",");
+        int definitiveResult = 0;
+        ArrayList<String> pile = new ArrayList<String>();
+
+        // create a pile from for rpn algorithm
+        // fill the pile for the rpn algorithm
+        for (int i = 0; i < arrayToString.length; i++) {
+            if (arrayToString[i].equals("+") || arrayToString[i].equals("-")) {
+                // if next element is a number
+                if (arrayToString[i + 1].matches("\\d+")) {
+                    pile.add(arrayToString[i + 1]);
+                    pile.add(arrayToString[i]);
+                    i++;
+                } else {
+                    pile.add(arrayToString[i]);
+                }
+            } else if (arrayToString[i].equals("*") || arrayToString[i].equals("/")) {
+                // if next element is a number
+                if (arrayToString[i + 1].matches("\\d+")) {
+                    pile.add(arrayToString[i + 1]);
+                    pile.add(arrayToString[i]);
+                    i++;
+                } else {
+                    pile.add(arrayToString[i]);
+                }
+            } else {
+                pile.add(arrayToString[i]);
+            }
+        }
+        System.out.println(pile);
+
+        // // calculate the result
+        for (int i = 0; i < pile.size(); i++) {
+            if (pile.get(i).equals("+")) {
+                int resultVal = Integer.parseInt(pile.get(i - 2)) + Integer.parseInt(pile.get(i - 1));
+                pile.set(i - 2, Integer.toString(resultVal));
+                pile.remove(i);
+                pile.remove(i - 1);
+                i = 0;
+            } else if (pile.get(i).equals("-")) {
+                int resultVal = Integer.parseInt(pile.get(i - 2)) - Integer.parseInt(pile.get(i - 1));
+                pile.set(i - 2, Integer.toString(resultVal));
+                pile.remove(i);
+                pile.remove(i - 1);
+                i = 0;
+            } else if (pile.get(i).equals("*")) {
+                int resultVal = Integer.parseInt(pile.get(i - 2)) * Integer.parseInt(pile.get(i - 1));
+                pile.set(i - 2, Integer.toString(resultVal));
+                pile.remove(i);
+                pile.remove(i - 1);
+                i = 0;
+            } else if (pile.get(i).equals("/")) {
+                // add protection for division by 0
+                if (Integer.parseInt(pile.get(i - 1)) == 0) {
+                    pile.set(i - 2, "0");
+                    pile.remove(i);
+                    pile.remove(i - 1);
+                    i = 0;
+                } else {
+                    int resultVal = Integer.parseInt(pile.get(i - 2)) / Integer.parseInt(pile.get(i - 1));
+                    pile.set(i - 2, Integer.toString(resultVal));
+                    pile.remove(i);
+                    pile.remove(i - 1);
+                    i = 0;
+                }
+            }
+        }
+        definitiveResult = Integer.parseInt(pile.get(0));
+        // reset the pile
+        pile.clear();
+        System.out.println("The definitive result is: " + definitiveResult + " The result is: " + result.getResult());
+        if (definitiveResult == result.getResult()) {
+            // set the result to true
+            result.setIsCorrect(true);
+            repository.save(result);
+            return "The result is correct";
+        } else {
+            // set the result to false
+            result.setIsCorrect(false);
+            repository.save(result);
+            return "The result is incorrect";
         }
     }
 }

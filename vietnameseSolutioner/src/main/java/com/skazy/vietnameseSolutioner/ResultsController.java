@@ -88,4 +88,11 @@ class ResultsController {
               .orElseThrow(() -> new Error("Result not found"));
         });
   }
+
+  // check if the result is good of calculation
+  @CrossOrigin(origins = "*")
+  @GetMapping("/result/{id}/check")
+  public String checkResult(@PathVariable Long id) {
+    return resultsService.checkResult(id);
+  }
 }

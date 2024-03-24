@@ -14,14 +14,16 @@ public class Results {
     private String calculation;
     private int result;
     private int time;
+    private boolean isCorrect;
 
     protected Results() {
     }
 
-    public Results(String calculation, int result, int time) {
+    public Results(String calculation, int result, int time, boolean isCorrect) {
         this.calculation = calculation;
         this.result = result;
         this.time = time;
+        this.isCorrect = isCorrect;
     }
 
     @Override
@@ -55,5 +57,15 @@ public class Results {
     // set result
     public void setResult(int result) {
         this.result = result;
+    }
+
+    // set isCorrect
+    public void setIsCorrect(boolean isCorrect) {
+        this.isCorrect = isCorrect;
+    }
+
+    // get isCorrect
+    public boolean getIsCorrect() {
+        return isCorrect;
     }
 }
